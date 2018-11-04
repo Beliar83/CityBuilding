@@ -1,0 +1,28 @@
+﻿Needed components
+- Item storage
+	- Capacity
+	- Stored Items
+- Building
+	- Type
+- Item consumer
+	- Storage
+- Item producer
+	- Recipe
+	- Storage
+- Walker producer
+	- Walker type
+	- Last walker produced at.
+- Workplace
+	- Workplace type.
+	- Current Employees
+- Influence area attribute
+	- Attribute
+	- Value
+	- Core Radius
+	- Value degredation per radius after core.
+Messaging:
+- Message to component of entity
+ - Entity
+ - Component
+  - By Id
+  - By Type
