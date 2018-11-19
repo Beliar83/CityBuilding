@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Components\" />
+    <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessagingSystem.Aka\MessagingSystem.Akka.csproj" />
+    <ProjectReference Include="..\EntityComponentSystem\GameEngine.csproj" />
   </ItemGroup>
 
 </Project>
