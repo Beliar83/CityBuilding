@@ -1,31 +1,50 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Akka.Actor;
 using GameEngine.EntityComponentSystem;
 using JetBrains.Annotations;
-using MessagingSystem.Akka.Exceptions;
+using MessagingSystem.Messages;
 
 namespace MessagingSystem.Akka
 {
-    internal class EntityActor : ReceiveActor
+    public class EntityActor : ReceiveActor
     {
         [NotNull] private readonly Entity entity;
+        [NotNull] private readonly Dictionary<string, List<ReceiveDefinition>> receiveDefinitions;
 
-        private EntityActor([NotNull] Entity entity)
+        public EntityActor([NotNull] Entity entity,
+            [NotNull] Dictionary<string, List<ReceiveDefinition>> receiveDefinitions)
         {
-            // ReSharper disable once TooManyChainedReferences
-            Guid entityId = Guid.Parse(Self.Path.Name);
             this.entity = entity;
-            if (entity is null)
-            {
-                throw new EntityNotFound(entityId);
-            }
-            
+            this.receiveDefinitions = receiveDefinitions;
+            Receive<ChangeState>(HandleChangeState);
         }
 
-        [Hyperion.Internal.NotNull]
-        public static Props GetProps([NotNull] Entity entity)
+        private bool HandleChangeState([NotNull] ChangeState message)
         {
-            return Props.Create(() => new EntityActor(entity));
+            if (!receiveDefinitions.ContainsKey(message.NewState))
+            {
+                return false;
+            }
+
+            List<ReceiveDefinition> stateReceives = receiveDefinitions[message.NewState];
+            Become(() =>
+            {
+                Receive<ChangeState>(HandleChangeState);
+                foreach (ReceiveDefinition receiveDefinition in stateReceives)
+                {
+                    Receive(receiveDefinition.MessageType, receiveDefinition.ReceiveHandler,
+                        receiveDefinition.ShouldHandle);
+                }
+            });
+            return true;
+        }
+
+        [NotNull]
+        public static Props GetProps([NotNull] Entity entity,
+            [NotNull] Dictionary<string, List<ReceiveDefinition>> receiveDefinitions)
+        {
+            Props props = Props.Create(() => new EntityActor(entity, receiveDefinitions));
+            return props;
         }
     }
 }

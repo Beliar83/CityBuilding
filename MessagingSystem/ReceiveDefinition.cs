@@ -11,7 +11,7 @@ namespace MessagingSystem
 
         [NotNull] public Predicate<object> ShouldHandle { get; }
 
-        private ReceiveDefinition([NotNull] Type messageType, [NotNull] Action<object> receiveHandler,
+        public ReceiveDefinition([NotNull] Type messageType, [NotNull] Action<object> receiveHandler,
             [NotNull] Predicate<object> shouldHandle)
         {
             MessageType = messageType;
