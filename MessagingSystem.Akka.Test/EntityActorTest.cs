@@ -49,5 +49,16 @@ namespace MessagingSystem.Akka.Test
         {
             entityActor = Sys.ActorOf(EntityActor.GetProps(entity, receiveDefinitions));
         }
+
+        [Fact]
+        public void ActorNotifiesOnWrongState()
+        {
+            GivenDummyEntityExists();
+            GivenEntityActorExists();
+            receiveDefinitions.Clear(); // Probably not needed, but to be safe.
+            const string testState = "test";
+            entityActor.Tell(new ChangeState(testState));
+            ExpectMsg<StateNotConfigured>(message => message.State == testState);
+        }
     }
 }

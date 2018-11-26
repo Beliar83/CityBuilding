@@ -23,6 +23,7 @@ namespace MessagingSystem.Akka
         {
             if (!receiveDefinitions.ContainsKey(message.NewState))
             {
+                Sender.Tell(new StateNotConfigured(message.NewState));
                 return false;
             }
 
