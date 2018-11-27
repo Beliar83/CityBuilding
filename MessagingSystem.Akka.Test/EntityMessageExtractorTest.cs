@@ -1,5 +1,5 @@
-﻿using MessagingSystem.Messages;
-using System;
+﻿using System;
+using MessagingSystem.Messages;
 using Xunit;
 
 namespace MessagingSystem.Akka.Test

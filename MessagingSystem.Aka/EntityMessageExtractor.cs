@@ -13,14 +13,16 @@ namespace MessagingSystem.Akka
         [CanBeNull]
         public override string EntityId([NotNull] object message)
         {
-            return (message as EntityMessageEnvelope)?.EntityId.ToString();
+            string entityId = (message as EntityMessageEnvelope)?.EntityId.ToString();
+            return entityId;
         }
 
         /// <inheritdoc />
         [CanBeNull]
         public override object EntityMessage([NotNull] object message)
         {
-            return (message as EntityMessageEnvelope)?.Message;
+            object entityMessage = (message as EntityMessageEnvelope)?.Message;
+            return entityMessage;
         }
     }
 }

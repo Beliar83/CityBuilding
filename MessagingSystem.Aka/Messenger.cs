@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Akka.Actor;
+using Akka.Cluster;
 using Akka.Cluster.Sharding;
 using Akka.Configuration;
 using GameEngine.EntityComponentSystem;
@@ -8,7 +9,7 @@ using JetBrains.Annotations;
 
 namespace MessagingSystem.Akka
 {
-    internal class Messenger : MessagingSystem.Messenger, Receiver
+    public class Messenger : MessagingSystem.Messenger, Receiver
     {
         [NotNull] [ItemNotNull] private readonly EntityCollection entities;
         private static readonly int maxNumberOfNodes = 100;
@@ -34,7 +35,8 @@ namespace MessagingSystem.Akka
               }
             }
             ");
-
+            Cluster cluster = Cluster.Get(actorSystem);
+            cluster.Join(cluster.SelfAddress);
             ClusterSharding sharding = ClusterSharding.Get(actorSystem);
             shardRegion = sharding.Start(
                 nameof(EntityActor),
@@ -51,7 +53,7 @@ namespace MessagingSystem.Akka
         /// <inheritdoc />
         public void SendMessage(object message)
         {
-            throw new NotImplementedException();
+            shardRegion.Tell(message);
         }
 
         /// <inheritdoc />
