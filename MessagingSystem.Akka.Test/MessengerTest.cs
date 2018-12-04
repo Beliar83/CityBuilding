@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using GameEngine.EntityComponentSystem;
 using JetBrains.Annotations;
+using MessagingSystem.Akka.Exceptions;
 using MessagingSystem.Messages;
 using Moq;
 using Xunit;
@@ -59,6 +60,29 @@ namespace MessagingSystem.Akka.Test
             ExpectMsg<Guid>(msg => msg == testEntity.Id);
         }
 
+        [Fact]
+        public void MessengerThrowsOnWrongEntityId()
+        {
+            GivenMessengerExists();
+            GivenMessengerIsConnectedToItself();
+            EventFilter.Exception<EntityNotFound>().ExpectOne(() =>
+                messenger.SendMessage(new EntityMessageEnvelope(Guid.NewGuid(), new ChangeState("Default"))));
+        }
+
+        [Fact]
+        public void MessengerReturnsTrueOnCorrectUri()
+        {
+            GivenMessengerExists();
+            Assert.True(messenger.Connect(messenger.Address));
+        }
+
+        [Fact]
+        public void MessengerReturnsFalseOnWrongUri()
+        {
+            GivenMessengerExists();
+            Assert.False(messenger.Connect(string.Empty));
+        }
+
         private void GivenMessengerIsConnectedToItself()
         {
             messenger.Connect(messenger.Address);
@@ -84,7 +108,8 @@ namespace MessagingSystem.Akka.Test
 
         [NotNull]
         [ItemNotNull]
-        private static EntityCollection CreateMockEntityCollection([NotNull] [ItemNotNull] IEnumerable<Entity> enumerable)
+        private static EntityCollection CreateMockEntityCollection(
+            [NotNull] [ItemNotNull] IEnumerable<Entity> enumerable)
         {
             var mockEntities = new Mock<EntityCollection>();
             mockEntities.Setup(el => el.GetEnumerator()).Returns(enumerable.GetEnumerator);

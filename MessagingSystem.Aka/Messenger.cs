@@ -6,6 +6,7 @@ using Akka.Cluster.Sharding;
 using Akka.Configuration;
 using GameEngine.EntityComponentSystem;
 using JetBrains.Annotations;
+using MessagingSystem.Akka.Exceptions;
 using AkkaAddress = Akka.Actor.Address;
 
 namespace MessagingSystem.Akka
@@ -43,7 +44,14 @@ namespace MessagingSystem.Akka
                 nameof(EntityActor),
                 id =>
                 {
-                    Entity entity = entities.GetEntityById(Guid.Parse(id));
+                    // ReSharper disable once SuggestVarOrType_SimpleTypes
+                    var entityId = Guid.Parse(id);
+                    Entity entity = entities.GetEntityById(entityId);
+                    if (entity is null)
+                    {
+                        throw new EntityNotFound(entityId);
+                    }
+
                     return EntityActor.GetProps(entity, receiveDefinitions);
                 },
                 ClusterShardingSettings.Create(actorSystem),

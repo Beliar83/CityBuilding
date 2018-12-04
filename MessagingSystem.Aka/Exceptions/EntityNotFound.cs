@@ -1,9 +1,9 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
+using JetBrains.Annotations;
 
 namespace MessagingSystem.Akka.Exceptions
 {
-    internal class EntityNotFound : Exception
+    public class EntityNotFound : Exception
     {
         private readonly Guid entityId;
 
