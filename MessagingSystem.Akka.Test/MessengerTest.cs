@@ -51,11 +51,17 @@ namespace MessagingSystem.Akka.Test
             GivenTestEntityExists();
             GivenTestEntityIsInList();
             GivenMessengerExists();
+            GivenMessengerIsConnectedToItself();
             GivenEntityTellsIdOnStringMessage();
             messenger.SendMessage(new EntityMessageEnvelope(testEntity.Id, new ChangeState("Default")));
             ExpectNoMsg(100);
             messenger.SendMessage(new EntityMessageEnvelope(testEntity.Id, "Test"));
             ExpectMsg<Guid>(msg => msg == testEntity.Id);
+        }
+
+        private void GivenMessengerIsConnectedToItself()
+        {
+            messenger.Connect(messenger.Address);
         }
 
         private void GivenEntityTellsIdOnStringMessage()

@@ -6,15 +6,17 @@ using Akka.Cluster.Sharding;
 using Akka.Configuration;
 using GameEngine.EntityComponentSystem;
 using JetBrains.Annotations;
+using AkkaAddress = Akka.Actor.Address;
 
 namespace MessagingSystem.Akka
 {
     public class Messenger : MessagingSystem.Messenger, Receiver
     {
         [NotNull] [ItemNotNull] private readonly EntityCollection entities;
-        private static readonly int maxNumberOfNodes = 100;
+        private const int MaxNumberOfNodes = 100; // Just a random number for now.
         [NotNull] private readonly IActorRef shardRegion;
         [NotNull] private readonly Dictionary<string, List<ReceiveDefinition>> receiveDefinitions;
+        [NotNull] private readonly Cluster cluster;
 
         public Messenger([NotNull] [ItemNotNull] EntityCollection entities,
             [NotNull] ActorSystem actorSystem)
@@ -35,8 +37,7 @@ namespace MessagingSystem.Akka
               }
             }
             ");
-            Cluster cluster = Cluster.Get(actorSystem);
-            cluster.Join(cluster.SelfAddress);
+            cluster = Cluster.Get(actorSystem);
             ClusterSharding sharding = ClusterSharding.Get(actorSystem);
             shardRegion = sharding.Start(
                 nameof(EntityActor),
@@ -46,7 +47,7 @@ namespace MessagingSystem.Akka
                     return EntityActor.GetProps(entity, receiveDefinitions);
                 },
                 ClusterShardingSettings.Create(actorSystem),
-                new EntityMessageExtractor(maxNumberOfNodes * 10)
+                new EntityMessageExtractor(MaxNumberOfNodes * 10)
             );
         }
 
@@ -55,6 +56,24 @@ namespace MessagingSystem.Akka
         {
             shardRegion.Tell(message);
         }
+
+        /// <inheritdoc />
+        public bool Connect(string address)
+        {
+            try
+            {
+                cluster.Join(AkkaAddress.Parse(address));
+                return true;
+            }
+            catch (UriFormatException exception)
+            {
+                Console.WriteLine(exception);
+                return false;
+            }
+        }
+
+        /// <inheritdoc />
+        public string Address => cluster.SelfAddress.ToString();
 
         /// <inheritdoc />
         public void SetupReceive(ReceiveDefinition receiveDefinition)

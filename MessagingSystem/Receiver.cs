@@ -4,6 +4,8 @@ namespace MessagingSystem
 {
     public interface Receiver
     {
+        [NotNull] string Address { get; }
+
         void SetupReceive([NotNull] ReceiveDefinition receiveDefinition);
         void SetupReceive([NotNull] string state, [NotNull] ReceiveDefinition receiveDefinition);
     }
