@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using CityBuilding.Actors;
 using JetBrains.Annotations;
 using Moq;
 using Xenko.Engine;
-using Xunit;
 
 // ReSharper disable NotNullMemberIsNotInitialized
 

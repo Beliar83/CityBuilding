@@ -6,9 +6,11 @@ using Akka.Cluster.Sharding;
 using Akka.Configuration;
 using CityBuilding.Actors;
 using CityBuilding.Exceptions;
+using CityBuilding.Messages;
 using JetBrains.Annotations;
 using Xenko.Engine;
 using AkkaAddress = Akka.Actor.Address;
+using EntityManager = CityBuilding.Actors.EntityManager;
 
 namespace CityBuilding
 {
@@ -17,12 +19,15 @@ namespace CityBuilding
         [NotNull] [ItemNotNull] private readonly Scene scene;
         private const int MaxNumberOfNodes = 100; // Just a random number for now.
         [NotNull] private readonly IActorRef shardRegion;
+        [NotNull] private readonly IActorRef entityManager;
         [NotNull] private readonly Cluster cluster;
-
+        [NotNull] private readonly ActorSystem actorSystem;
+        
         public Messenger([NotNull] [ItemNotNull] Scene scene,
             [NotNull] ActorSystem actorSystem)
         {
             this.scene = scene;
+            this.actorSystem = actorSystem;
 
             Config config = ConfigurationFactory.ParseString(@"
             akka.persistence{
@@ -56,14 +61,25 @@ namespace CityBuilding
                 ClusterShardingSettings.Create(actorSystem),
                 new EntityMessageExtractor(MaxNumberOfNodes * 10)
             );
+            entityManager = CreateEntityManager();
+        }
+
+        protected virtual IActorRef CreateEntityManager()
+        {
+             return actorSystem.ActorOf(EntityManager.Props);
         }
 
         /// <inheritdoc />
-        public void SendMessage(object message)
+        public void SendMessageToEntity(EntityMessageEnvelope message)
         {
             shardRegion.Tell(message);
         }
 
+        public void SendMessageToEntityManager(object message)
+        {
+            entityManager.Tell(message);
+        }
+        
         /// <inheritdoc />
         public bool Connect(string address)
         {
