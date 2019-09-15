@@ -68,6 +68,7 @@
       <e p="CityBuilding" t="IncludeRecursive">
         <e p="Actors" t="Include">
           <e p="EntityActor.cs" t="Include" />
+          <e p="EntityManager.cs" t="Include" />
         </e>
         <e p="Assets" t="Include">
           <e p="GameSettings.xkgamesettings" t="Include" />
@@ -84,14 +85,25 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="CityBuilding.csproj" t="IncludeRecursive" />
         <e p="CityBuilding.xkpkg" t="Include" />
+        <e p="Components" t="Include">
+          <e p="ItemConsumer.cs" t="Include" />
+          <e p="ItemStorage.cs" t="Include" />
+          <e p="WalkerProducer.cs" t="Include" />
+        </e>
         <e p="EntityMessageExtractor.cs" t="Include" />
         <e p="Exceptions" t="Include">
           <e p="EntityNotFound.cs" t="Include" />
         </e>
+        <e p="Items" t="Include">
+          <e p="ItemStorageData.cs" t="Include" />
+          <e p="NeededItemData.cs" t="Include" />
+        </e>
         <e p="Messages" t="Include">
           <e p="ComponentOfEntityMessageEnvelope.cs" t="Include" />
+          <e p="CreateWalkerWithMessage.cs" t="Include" />
           <e p="EntityMessageEnvelope.cs" t="Include" />
           <e p="FirstComponentOfEntityMessageEnvelope.cs" t="Include" />
+          <e p="ItemRequest.cs" t="Include" />
         </e>
         <e p="Messenger.cs" t="Include" />
         <e p="Notes.txt" t="Include" />
@@ -101,6 +113,9 @@
               <e p="CityBuilding.AssemblyInfo.cs" t="Include" />
             </e>
           </e>
+        </e>
+        <e p="Processors" t="Include">
+          <e p="ItemConsumerProcessor.cs" t="Include" />
         </e>
         <e p="Resources" t="Include">
           <e p="skybox_texture_hdr.dds" t="Include" />
@@ -127,6 +142,7 @@
         <e p="CityBuilding.Test.csproj" t="IncludeRecursive" />
         <e p="EntityActorTest.cs" t="Include" />
         <e p="EntityMessageExtractorTest.cs" t="Include" />
+        <e p="ItemConsumerProcessorTests.cs" t="Include" />
         <e p="MessengerTest.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
@@ -136,6 +152,7 @@
             </e>
           </e>
         </e>
+        <e p="TestWithMessenger.cs" t="Include" />
       </e>
       <e p="CityBuilding.Windows" t="IncludeRecursive">
         <e p="CityBuilding.Windows.csproj" t="IncludeRecursive" />

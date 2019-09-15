@@ -1,14 +1,11 @@
 ﻿Needed components
-- Item storage
-	- Capacity
-	- Stored Items
-- Building
-	- Type
-- Item consumer
-	- Storage
 - Item producer
 	- Recipe
 	- Storage
+- Walker
+    - Walker type
+    - Producer Id
+    - Distance walked
 - Walker producer
 	- Walker type
 	- Last walker produced at.
@@ -19,10 +16,24 @@
 	- Attribute
 	- Value
 	- Core Radius
-	- Value degredation per radius after core.
+	- Value degradation per radius after core.
+- Construction
+    - Needed Resources
+    - Delivered Resources
 Messaging:
 - Message to component of entity
- - Entity
- - Component
-  - By Id
-  - By Type
+    - Entity
+    - Component
+        - By Id
+Done: 
+Components:
+- Item storage
+	- Capacity
+	- Stored Items
+- Item consumer
+    - NeededItems
+    - Storage
+Messaging:
+- Message to component of entity
+    - Component
+        - By Type
