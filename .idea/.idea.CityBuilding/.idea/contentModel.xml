@@ -143,6 +143,7 @@
         <e p="EntityActorTest.cs" t="Include" />
         <e p="EntityMessageExtractorTest.cs" t="Include" />
         <e p="ItemConsumerProcessorTests.cs" t="Include" />
+        <e p="ItemConsumerSubtractsItemsData.yaml" t="Include" />
         <e p="MessengerTest.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">

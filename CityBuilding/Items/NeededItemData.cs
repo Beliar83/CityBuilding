@@ -1,9 +1,10 @@
 ﻿namespace CityBuilding.Items
 {
-    public struct NeededItemData
+    public class NeededItemData
     {
         public int CurrentCount;
         public int MaxCount;
         public int OrderThreshold;
+        public int ConsumptionPerSecond;
     }
 }

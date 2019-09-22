@@ -3,14 +3,14 @@
 	- Recipe
 	- Storage
 - Walker
-    - Walker type
+    - Message
+    - Target Components
     - Producer Id
+    - Max distance
     - Distance walked
-- Walker producer
-	- Walker type
-	- Last walker produced at.
 - Workplace
-	- Workplace type.
+	- Employee type.
+	- Max Employees
 	- Current Employees
 - Influence area attribute
 	- Attribute
@@ -20,6 +20,8 @@
 - Construction
     - Needed Resources
     - Delivered Resources
+- Item consumer
+    - Consumption per second
 Messaging:
 - Message to component of entity
     - Entity

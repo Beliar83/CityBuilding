@@ -6,7 +6,11 @@ namespace CityBuilding.Components
 {
     public class ItemConsumer : EntityComponent
     {
-        public Dictionary<string, NeededItemData> NeededItems { get; protected set; }
-            = new Dictionary<string, NeededItemData>();
+        public ItemConsumer(Dictionary<string, NeededItemData> neededItems = null)
+        {
+            NeededItems = neededItems ?? new Dictionary<string, NeededItemData>();
+        }
+        
+        public Dictionary<string, NeededItemData> NeededItems { get; }
     }
 }

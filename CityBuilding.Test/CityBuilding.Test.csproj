@@ -21,10 +21,17 @@
     <PackageReference Include="Xenko.Graphics" Version="3.1.0.1-beta02-0674" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+    <PackageReference Include="YamlDotNet" Version="6.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CityBuilding\CityBuilding.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ItemConsumerSubtractsItemsData.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
