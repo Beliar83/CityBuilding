@@ -14,7 +14,8 @@ namespace CityBuilding.Test
     {
 
         [Theory]
-        [InlineData("Test", 1, 10, 5, 4)]
+        [InlineData("Test", 1, 10, 5, 9)]
+        [InlineData("Test", 4, 20, 5, 16)]
         public void ItemConsumerAsksForWalkerWithItemRequestWhenBelowThreshold(string item, int currentCount, int maxCount, int orderThreshold, int expectedAmount)
         {
             GivenSceneExists();

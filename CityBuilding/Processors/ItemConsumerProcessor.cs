@@ -25,7 +25,8 @@ namespace CityBuilding.Processors
                 let neededItemData = itemConsumer.NeededItems[item]
                 let thresholdDifference = neededItemData.CurrentCount - neededItemData.OrderThreshold
                 where thresholdDifference < 0
-                select new CreateWalkerWithMessage(new ItemRequest {Item = item, Amount = thresholdDifference * -1,})))
+                select new CreateWalkerWithMessage(new ItemRequest {Item = item, 
+                    Amount = neededItemData.MaxCount - neededItemData.CurrentCount,})))
             {
                 messenger.SendMessageToEntityManager(message);
             }
