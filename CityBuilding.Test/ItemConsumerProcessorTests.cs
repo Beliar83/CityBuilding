@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Akka.Actor;
 using CityBuilding.Components;
 using CityBuilding.Items;
@@ -13,7 +11,6 @@ using Xenko.Games;
 using Xunit;
 using Moq.Protected;
 using Shouldly;
-using Xenko.Engine.Network;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -47,18 +44,9 @@ namespace CityBuilding.Test
             };
             TestEntity.Components.Add(itemConsumer);
             Game.SceneSystem.Update(new GameTime());
-            ExpectMsg<CreateWalkerWithMessage>(message => IsWalkerWithItemRequest(message, item, expectedAmount));
+            ExpectMsg<CreateWalkerWithMessage>(message => WalkerTests.IsWalkerWithItemRequest(message, item, expectedAmount));
         }
 
-        private static bool IsWalkerWithItemRequest(CreateWalkerWithMessage message, string expectedItem, int expectedAmount)
-        {
-            var request = message.Message.ShouldBeOfType<ItemRequest>();
-            request.Item.ShouldBe(expectedItem);
-            request.Amount.ShouldBe(expectedAmount);
-            return true;
-
-        }
-        
         [Theory]
         [MemberData( nameof(GetItemConsumerSubtractsItemsData))]
         public void ItemConsumerSubtractsItems(
@@ -98,9 +86,11 @@ namespace CityBuilding.Test
 
         private struct ItemConsumerSubtractsItemsData
         {
+#pragma warning disable 649 // It is set from the deserializer
             public int Seconds;
             public Dictionary<string, NeededItemData> NeededItems;
             public Dictionary<string, int> ExpectedCounts;
+#pragma warning restore 649
         }
     }
 }

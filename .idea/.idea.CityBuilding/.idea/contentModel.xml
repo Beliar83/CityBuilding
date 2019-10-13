@@ -88,15 +88,15 @@
         <e p="Components" t="Include">
           <e p="ItemConsumer.cs" t="Include" />
           <e p="ItemStorage.cs" t="Include" />
-          <e p="WalkerProducer.cs" t="Include" />
         </e>
         <e p="EntityMessageExtractor.cs" t="Include" />
         <e p="Exceptions" t="Include">
           <e p="EntityNotFound.cs" t="Include" />
         </e>
         <e p="Items" t="Include">
-          <e p="ItemStorageData.cs" t="Include" />
+          <e p="ItemData.cs" t="Include" />
           <e p="NeededItemData.cs" t="Include" />
+          <e p="StoredItemData.cs" t="Include" />
         </e>
         <e p="Messages" t="Include">
           <e p="ComponentOfEntityMessageEnvelope.cs" t="Include" />
@@ -116,6 +116,7 @@
         </e>
         <e p="Processors" t="Include">
           <e p="ItemConsumerProcessor.cs" t="Include" />
+          <e p="ItemStorageProcessor.cs" t="Include" />
         </e>
         <e p="Resources" t="Include">
           <e p="skybox_texture_hdr.dds" t="Include" />
@@ -144,6 +145,7 @@
         <e p="EntityMessageExtractorTest.cs" t="Include" />
         <e p="ItemConsumerProcessorTests.cs" t="Include" />
         <e p="ItemConsumerSubtractsItemsData.yaml" t="Include" />
+        <e p="ItemStorageProcessorTests.cs" t="Include" />
         <e p="MessengerTest.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
@@ -154,6 +156,7 @@
           </e>
         </e>
         <e p="TestWithMessenger.cs" t="Include" />
+        <e p="WalkerTests.cs" t="Include" />
       </e>
       <e p="CityBuilding.Windows" t="IncludeRecursive">
         <e p="CityBuilding.Windows.csproj" t="IncludeRecursive" />
