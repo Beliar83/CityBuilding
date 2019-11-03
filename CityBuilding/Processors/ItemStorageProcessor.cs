@@ -26,18 +26,31 @@ namespace CityBuilding.Processors
                 {
                     string item = items.Key;
                     StoredItemData itemData = items.Value;
-                    if (!itemData.RequestUntil.HasValue)
+                    if (itemData.RequestUntil.HasValue)
+                    {
+                        int missing = itemData.RequestUntil.Value - itemData.CurrentCount;
+                        if (missing > 0)
+                        {
+                            messenger.SendMessageToEntityManager(new CreateWalkerWithMessage(new ItemRequest
+                            {
+                                Item = item,
+                                Amount = missing
+                            }));
+                        }
+                    }
+
+                    if (!itemData.EmptyUntil.HasValue)
                     {
                         continue;
                     }
 
-                    int missing = itemData.RequestUntil.Value - itemData.CurrentCount;
-                    if (missing > 0)
+                    int excess = itemData.CurrentCount - itemData.EmptyUntil.Value;
+                    if (excess > 0)
                     {
-                        messenger.SendMessageToEntityManager(new CreateWalkerWithMessage(new ItemRequest
+                        messenger.SendMessageToEntityManager(new CreateWalkerWithMessage(new StorageQuery
                         {
                             Item = item,
-                            Amount = missing
+                            Amount = excess
                         }));
                     }
                 }

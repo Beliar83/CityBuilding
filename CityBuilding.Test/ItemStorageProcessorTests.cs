@@ -99,5 +99,94 @@ namespace CityBuilding.Test
             Game.SceneSystem.Update(new GameTime());
             ExpectNoMsg(1000);
         }
+
+        [Theory]
+        [InlineData(10, 5, 5)]
+        [InlineData(6, 5, 1)]
+        [InlineData(50, 30, 20)]
+        public void ProcessorAsksForStorageIfAboveEmptyThreshold(int current, int emptyUntil, int expected)
+        {
+            GivenSceneExists();
+            GivenMessengerExists();
+            MessengerMock.Protected()
+                .Setup<IActorRef>("CreateEntityManager")
+                .Returns(() => TestActor);
+            var itemStorageProcessor = new ItemStorageProcessor(Messenger);
+            Game.SceneSystem.SceneInstance.Processors.Add(itemStorageProcessor);
+            GivenTestEntityExists();
+            GivenTestEntityIsInList();
+            var itemStorage = new ItemStorage
+            {
+                Capacity = current,
+                Items =
+                {
+                    ["Test"] = new StoredItemData
+                    {
+                        CurrentCount = current,
+                        MaxCount = current,
+                        EmptyUntil = emptyUntil
+                    }
+                }
+            };
+            TestEntity.Components.Add(itemStorage);
+            Game.SceneSystem.Update(new GameTime());
+            ExpectMsg<CreateWalkerWithMessage>(
+                message => WalkerTests.IsWalkerWithStorageRequest(message, "Test", expected));
+        }
+
+        [Theory]
+        [InlineData(2, 5)]
+        [InlineData(10, 10)]
+        [InlineData(28, 30)]
+        public void ProcessorRequestsStorageIfBelowEmptyThreshold(int current, int emptyUntil)
+        {
+            GivenSceneExists();
+            GivenMessengerExists();
+            MessengerMock.Protected()
+                .Setup<IActorRef>("CreateEntityManager")
+                .Returns(() => TestActor);
+            var itemStorageProcessor = new ItemStorageProcessor(Messenger);
+            Game.SceneSystem.SceneInstance.Processors.Add(itemStorageProcessor);
+            GivenTestEntityExists();
+            GivenTestEntityIsInList();
+            var itemStorage = new ItemStorage
+            {
+                Capacity = 10,
+                Items =
+                {
+                    ["Test"] = new StoredItemData
+                    {
+                        CurrentCount = current,
+                        MaxCount = current,
+                        EmptyUntil = emptyUntil
+                    }
+                }
+            };
+            TestEntity.Components.Add(itemStorage);
+            Game.SceneSystem.Update(new GameTime());
+            ExpectNoMsg(1000);
+        }
+
+        [Fact]
+        public void ProcessorRequestsNoStorageIfEmptyUntilNotSet()
+        {
+            GivenSceneExists();
+            GivenMessengerExists();
+            MessengerMock.Protected()
+                .Setup<IActorRef>("CreateEntityManager")
+                .Returns(() => TestActor);
+            var itemStorageProcessor = new ItemStorageProcessor(Messenger);
+            Game.SceneSystem.SceneInstance.Processors.Add(itemStorageProcessor);
+            GivenTestEntityExists();
+            GivenTestEntityIsInList();
+            var itemStorage = new ItemStorage
+            {
+                Capacity = 10,
+                Items = {["Test"] = new StoredItemData()}
+            };
+            TestEntity.Components.Add(itemStorage);
+            Game.SceneSystem.Update(new GameTime());
+            ExpectNoMsg(1000);
+        }
     }
 }

@@ -13,5 +13,14 @@ namespace CityBuilding.Test
             request.Amount.ShouldBe(expectedAmount);
             return true;
         }
+
+        public static bool IsWalkerWithStorageRequest(CreateWalkerWithMessage message, string expectedItem,
+            int expectedAmount)
+        {
+            var request = message.Message.ShouldBeOfType<StorageQuery>();
+            request.Item.ShouldBe(expectedItem);
+            request.Amount.ShouldBe(expectedAmount);
+            return true;
+        }
     }
 }

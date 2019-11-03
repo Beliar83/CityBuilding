@@ -12,6 +12,7 @@ namespace CityBuilding.Components
         }
 
         public int Capacity { get; set; }
+        public bool AutomaticallyControlled { get; set; }
         public Dictionary<string, StoredItemData> Items { get; }
     }
 }
