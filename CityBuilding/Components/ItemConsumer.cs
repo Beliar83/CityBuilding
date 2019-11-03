@@ -10,7 +10,7 @@ namespace CityBuilding.Components
         {
             NeededItems = neededItems ?? new Dictionary<string, NeededItemData>();
         }
-        
+
         public Dictionary<string, NeededItemData> NeededItems { get; }
     }
 }

@@ -104,9 +104,9 @@
           <e p="EntityMessageEnvelope.cs" t="Include" />
           <e p="FirstComponentOfEntityMessageEnvelope.cs" t="Include" />
           <e p="ItemRequest.cs" t="Include" />
+          <e p="StorageQuery.cs" t="Include" />
         </e>
         <e p="Messenger.cs" t="Include" />
-        <e p="Notes.txt" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
             <e p="netstandard2.0" t="Include">

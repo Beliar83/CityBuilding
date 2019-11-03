@@ -68,7 +68,7 @@ namespace CityBuilding.Test
                 .Setup<IActorRef>("CreateEntityManager")
                 .Returns(() => TestActor);
             Messenger.SendMessageToEntityManager("Test");
-            ExpectMsg<string>("Test");
+            ExpectMsg("Test");
         }
     }
 }

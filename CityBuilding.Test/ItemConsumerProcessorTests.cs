@@ -7,10 +7,10 @@ using CityBuilding.Components;
 using CityBuilding.Items;
 using CityBuilding.Messages;
 using CityBuilding.Processors;
-using Xenko.Games;
-using Xunit;
 using Moq.Protected;
 using Shouldly;
+using Xenko.Games;
+using Xunit;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -19,11 +19,11 @@ namespace CityBuilding.Test
 {
     public class ItemConsumerProcessorTests : TestWithMessenger
     {
-
         [Theory]
         [InlineData("Test", 1, 10, 5, 9)]
         [InlineData("Test", 4, 20, 5, 16)]
-        public void ItemConsumerAsksForWalkerWithItemRequestWhenBelowThreshold(string item, int currentCount, int maxCount, int orderThreshold, int expectedAmount)
+        public void ItemConsumerAsksForWalkerWithItemRequestWhenBelowThreshold(string item, int currentCount,
+            int maxCount, int orderThreshold, int expectedAmount)
         {
             GivenSceneExists();
             GivenMessengerExists();
@@ -39,19 +39,20 @@ namespace CityBuilding.Test
                 NeededItems =
                 {
                     [item] = new NeededItemData
-                        {CurrentCount = currentCount, MaxCount = maxCount, OrderThreshold = orderThreshold,}
+                        {CurrentCount = currentCount, MaxCount = maxCount, OrderThreshold = orderThreshold}
                 }
             };
             TestEntity.Components.Add(itemConsumer);
             Game.SceneSystem.Update(new GameTime());
-            ExpectMsg<CreateWalkerWithMessage>(message => WalkerTests.IsWalkerWithItemRequest(message, item, expectedAmount));
+            ExpectMsg<CreateWalkerWithMessage>(message =>
+                WalkerTests.IsWalkerWithItemRequest(message, item, expectedAmount));
         }
 
         [Theory]
-        [MemberData( nameof(GetItemConsumerSubtractsItemsData))]
+        [MemberData(nameof(GetItemConsumerSubtractsItemsData))]
         public void ItemConsumerSubtractsItems(
-            int seconds, 
-            Dictionary<string, NeededItemData> neededItems, 
+            int seconds,
+            Dictionary<string, NeededItemData> neededItems,
             Dictionary<string, int> expectedCounts)
         {
             GivenSceneExists();
@@ -65,7 +66,7 @@ namespace CityBuilding.Test
             GivenTestEntityIsInList();
             var itemConsumer = new ItemConsumer(neededItems);
             TestEntity.Components.Add(itemConsumer);
-            var elapsedTime = new TimeSpan(0,0,0, seconds);
+            var elapsedTime = new TimeSpan(0, 0, 0, seconds);
             Game.SceneSystem.Update(new GameTime(elapsedTime, elapsedTime));
             foreach ((string key, int expectedCount) in expectedCounts)
             {
@@ -81,7 +82,7 @@ namespace CityBuilding.Test
                 .WithNamingConvention(new CamelCaseNamingConvention())
                 .Build();
             var testData = deserializer.Deserialize<List<ItemConsumerSubtractsItemsData>>(yamlData);
-            return testData.Select(d => new object[]{d.Seconds, d.NeededItems, d.ExpectedCounts});
+            return testData.Select(d => new object[] {d.Seconds, d.NeededItems, d.ExpectedCounts});
         }
 
         private struct ItemConsumerSubtractsItemsData

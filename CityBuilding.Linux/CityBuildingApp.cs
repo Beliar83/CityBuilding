@@ -2,9 +2,9 @@ using Xenko.Engine;
 
 namespace CityBuilding.Linux
 {
-    class CityBuildingApp
+    internal class CityBuildingApp
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             using (var game = new Game())
             {

@@ -7,11 +7,14 @@ using Xenko.Input;
 namespace CityBuilding
 {
     /// <summary>
-    /// A script that allows to move and rotate an entity through keyboard, mouse and touch input to provide basic camera navigation.
+    ///     A script that allows to move and rotate an entity through keyboard, mouse and touch input to provide basic camera
+    ///     navigation.
     /// </summary>
     /// <remarks>
-    /// The entity can be moved using W, A, S, D, Q and E, arrow keys, a gamepad's left stick or dragging/scaling using multi-touch.
-    /// Rotation is achieved using the Numpad, the mouse while holding the right mouse button, a gamepad's right stick, or dragging using single-touch.
+    ///     The entity can be moved using W, A, S, D, Q and E, arrow keys, a gamepad's left stick or dragging/scaling using
+    ///     multi-touch.
+    ///     Rotation is achieved using the Numpad, the mouse while holding the right mouse button, a gamepad's right stick, or
+    ///     dragging using single-touch.
     /// </remarks>
     public class BasicCameraController : SyncScript
     {
@@ -21,9 +24,9 @@ namespace CityBuilding
         private Vector3 translation;
         private float yaw;
         private float pitch;
-        
+
         public bool Gamepad { get; set; } = false;
-        
+
         public Vector3 KeyboardMovementSpeed { get; set; } = new Vector3(5.0f);
 
         public Vector3 TouchMovementSpeed { get; set; } = new Vector3(0.7f, 0.7f, 0.3f);
@@ -59,11 +62,11 @@ namespace CityBuilding
 
         private void ProcessInput()
         {
-            float deltaTime = (float)Game.UpdateTime.Elapsed.TotalSeconds;
+            var deltaTime = (float) Game.UpdateTime.Elapsed.TotalSeconds;
             translation = Vector3.Zero;
             yaw = 0f;
             pitch = 0f;
-            
+
             // Keyboard and Gamepad based movement
             {
                 // Our base speed is: one unit per second:
@@ -76,23 +79,24 @@ namespace CityBuilding
                 //    on screen which often are inconsistent, meaning that if the player has performance issues,
                 //    this entity will move around slower.
                 float speed = 1f * deltaTime;
-                
+
                 Vector3 dir = Vector3.Zero;
-                
+
                 if (Gamepad && Input.HasGamePad)
                 {
                     GamePadState padState = Input.DefaultGamePad.State;
                     // LeftThumb can be positive or negative on both axis (pushed to the right or to the left)
                     dir.Z += padState.LeftThumb.Y;
                     dir.X += padState.LeftThumb.X;
-                    
+
                     // Triggers are always positive, in this case using one to increase and the other to decrease
                     dir.Y -= padState.LeftTrigger;
                     dir.Y += padState.RightTrigger;
-                    
+
                     // Increase speed when pressing A, LeftShoulder or RightShoulder
                     // Here:does the enum flag 'Buttons' has one of the flag ('A','LeftShoulder' or 'RightShoulder') set
-                    if ((padState.Buttons & (GamePadButton.A | GamePadButton.LeftShoulder | GamePadButton.RightShoulder)) != 0)
+                    if ((padState.Buttons &
+                         (GamePadButton.A | GamePadButton.LeftShoulder | GamePadButton.RightShoulder)) != 0)
                     {
                         speed *= SpeedFactor;
                     }
@@ -106,37 +110,40 @@ namespace CityBuilding
                     {
                         dir.Z += 1;
                     }
+
                     if (Input.IsKeyDown(Keys.S) || Input.IsKeyDown(Keys.Down))
                     {
                         dir.Z -= 1;
                     }
-                
+
                     // Left/Right
                     if (Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left))
                     {
                         dir.X -= 1;
                     }
+
                     if (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
                     {
                         dir.X += 1;
                     }
-                
+
                     // Down/Up
                     if (Input.IsKeyDown(Keys.Q))
                     {
                         dir.Y -= 1;
                     }
+
                     if (Input.IsKeyDown(Keys.E))
                     {
                         dir.Y += 1;
                     }
-                    
+
                     // Increase speed when pressing shift
                     if (Input.IsKeyDown(Keys.LeftShift) || Input.IsKeyDown(Keys.RightShift))
                     {
                         speed *= SpeedFactor;
                     }
-                    
+
                     // If the player pushes down two or more buttons, the direction and ultimately the base speed
                     // will be greater than one (vector(1, 1) is farther away from zero than vector(0, 1)),
                     // normalizing the vector ensures that whichever direction the player chooses, that direction
@@ -148,11 +155,11 @@ namespace CityBuilding
                         dir = Vector3.Normalize(dir);
                     }
                 }
-                
+
                 // Finally, push all of that to the translation variable which will be used within UpdateTransform()
                 translation += dir * KeyboardMovementSpeed * speed;
             }
-            
+
             // Keyboard and Gamepad based Rotation
             {
                 // See Keyboard & Gamepad translation's deltaTime usage
@@ -164,42 +171,44 @@ namespace CityBuilding
                     rotation.X += padState.RightThumb.Y;
                     rotation.Y += -padState.RightThumb.X;
                 }
-                
+
                 if (Input.HasKeyboard)
                 {
                     if (Input.IsKeyDown(Keys.NumPad2))
                     {
                         rotation.X += 1;
                     }
+
                     if (Input.IsKeyDown(Keys.NumPad8))
                     {
                         rotation.X -= 1;
                     }
-    
+
                     if (Input.IsKeyDown(Keys.NumPad4))
                     {
                         rotation.Y += 1;
                     }
+
                     if (Input.IsKeyDown(Keys.NumPad6))
                     {
                         rotation.Y -= 1;
                     }
-                    
+
                     // See Keyboard & Gamepad translation's Normalize() usage
                     if (rotation.Length() > 1f)
                     {
                         rotation = Vector2.Normalize(rotation);
                     }
                 }
-                
+
                 // Modulate by speed
                 rotation *= KeyboardRotationSpeed * speed;
-                
+
                 // Finally, push all of that to pitch & yaw which are going to be used within UpdateTransform()
                 pitch += rotation.X;
                 yaw += rotation.Y;
             }
-            
+
             // Mouse movement and gestures
             {
                 // This type of input should not use delta time at all, they already are frame-rate independent.
@@ -214,7 +223,7 @@ namespace CityBuilding
                     {
                         Input.LockMousePosition();
                         Game.IsMouseVisible = false;
-        
+
                         yaw -= Input.MouseDelta.X * MouseRotationSpeed.X;
                         pitch -= Input.MouseDelta.Y * MouseRotationSpeed.Y;
                     }
@@ -224,26 +233,26 @@ namespace CityBuilding
                         Game.IsMouseVisible = true;
                     }
                 }
-                
+
                 // Handle gestures
-                foreach (var gestureEvent in Input.GestureEvents)
+                foreach (GestureEvent gestureEvent in Input.GestureEvents)
                 {
                     switch (gestureEvent.Type)
                     {
                         // Rotate by dragging
                         case GestureType.Drag:
-                            var drag = (GestureEventDrag)gestureEvent;
-                            var dragDistance = drag.DeltaTranslation;
+                            var drag = (GestureEventDrag) gestureEvent;
+                            Vector2 dragDistance = drag.DeltaTranslation;
                             yaw = -dragDistance.X * TouchRotationSpeed.X;
                             pitch = -dragDistance.Y * TouchRotationSpeed.Y;
                             break;
 
                         // Move along z-axis by scaling and in xy-plane by multi-touch dragging
                         case GestureType.Composite:
-                            var composite = (GestureEventComposite)gestureEvent;
+                            var composite = (GestureEventComposite) gestureEvent;
                             translation.X = -composite.DeltaTranslation.X * TouchMovementSpeed.X;
                             translation.Y = -composite.DeltaTranslation.Y * TouchMovementSpeed.Y;
-                            translation.Z = (float)Math.Log(composite.DeltaScale + 1) * TouchMovementSpeed.Z;
+                            translation.Z = (float) Math.Log(composite.DeltaScale + 1) * TouchMovementSpeed.Z;
                             break;
                     }
                 }
@@ -253,24 +262,24 @@ namespace CityBuilding
         private void UpdateTransform()
         {
             // Get the local coordinate system
-            var rotation = Matrix.RotationQuaternion(Entity.Transform.Rotation);
+            Matrix rotation = Matrix.RotationQuaternion(Entity.Transform.Rotation);
 
             // Enforce the global up-vector by adjusting the local x-axis
-            var right = Vector3.Cross(rotation.Forward, upVector);
-            var up = Vector3.Cross(right, rotation.Forward);
+            Vector3 right = Vector3.Cross(rotation.Forward, upVector);
+            Vector3 up = Vector3.Cross(right, rotation.Forward);
 
             // Stabilize
             right.Normalize();
             up.Normalize();
 
             // Adjust pitch. Prevent it from exceeding up and down facing. Stabilize edge cases.
-            var currentPitch = MathUtil.PiOverTwo - (float)Math.Acos(Vector3.Dot(rotation.Forward, upVector));
+            float currentPitch = MathUtil.PiOverTwo - (float) Math.Acos(Vector3.Dot(rotation.Forward, upVector));
             pitch = MathUtil.Clamp(currentPitch + pitch, -MaximumPitch, MaximumPitch) - currentPitch;
 
             Vector3 finalTranslation = translation;
             finalTranslation.Z = -finalTranslation.Z;
             finalTranslation = Vector3.TransformCoordinate(finalTranslation, rotation);
-            
+
             // Move in local coordinates
             Entity.Transform.Position += finalTranslation;
 

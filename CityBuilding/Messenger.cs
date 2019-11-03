@@ -22,7 +22,7 @@ namespace CityBuilding
         [NotNull] private readonly IActorRef entityManager;
         [NotNull] private readonly Cluster cluster;
         [NotNull] private readonly ActorSystem actorSystem;
-        
+
         public Messenger([NotNull] [ItemNotNull] Scene scene,
             [NotNull] ActorSystem actorSystem)
         {
@@ -66,7 +66,7 @@ namespace CityBuilding
 
         protected virtual IActorRef CreateEntityManager()
         {
-             return actorSystem.ActorOf(EntityManager.Props);
+            return actorSystem.ActorOf(EntityManager.Props);
         }
 
         /// <inheritdoc />
@@ -79,7 +79,7 @@ namespace CityBuilding
         {
             entityManager.Tell(message);
         }
-        
+
         /// <inheritdoc />
         public bool Connect(string address)
         {

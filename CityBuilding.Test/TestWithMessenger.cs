@@ -55,7 +55,7 @@ namespace CityBuilding.Test
             var entities = new List<Entity>();
             for (var i = 0; i < number; i++)
             {
-                entities.Add(new Entity() {Id = Guid.NewGuid()});
+                entities.Add(new Entity {Id = Guid.NewGuid()});
             }
 
             return entities;
@@ -77,9 +77,9 @@ namespace CityBuilding.Test
         {
             // ReSharper disable once SuggestVarOrType_SimpleTypes
             var testGuid = Guid.NewGuid();
-            TestEntity = new Entity()
+            TestEntity = new Entity
             {
-                Id = testGuid,
+                Id = testGuid
             };
         }
     }

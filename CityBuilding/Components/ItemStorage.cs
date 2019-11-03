@@ -6,8 +6,12 @@ namespace CityBuilding.Components
 {
     public class ItemStorage : EntityComponent
     {
+        public ItemStorage()
+        {
+            Items = new Dictionary<string, StoredItemData>();
+        }
+
         public int Capacity { get; set; }
-        public Dictionary<string, StoredItemData> Items { get; protected set; } 
-            = new Dictionary<string, StoredItemData>();
+        public Dictionary<string, StoredItemData> Items { get; }
     }
 }
