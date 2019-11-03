@@ -4,5 +4,7 @@
     {
         public int? RequestUntil { get; set; }
         public int? EmptyUntil { get; set; }
+
+        public int Priority { get; set; }
     }
 }

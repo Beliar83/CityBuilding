@@ -12,10 +12,12 @@ namespace CityBuilding.Test
     public class ItemStorageProcessorTests : TestWithMessenger
     {
         [Theory]
-        [InlineData(0, 5, 5)]
-        [InlineData(3, 5, 2)]
-        [InlineData(5, 15, 10)]
-        public void ProcessorRequestsItemsIfRequestThresholdNotMet(int current, int requestUntil, int expected)
+        [InlineData(5, 0, 5, 5)]
+        [InlineData(5, 3, 5, 2)]
+        [InlineData(15, 5, 15, 10)]
+        [InlineData(10, 5, 15, 5)]
+        public void ProcessorRequestsItemsIfRequestThresholdNotMet(int capacity, int current, int requestUntil,
+            int expected)
         {
             GivenSceneExists();
             GivenMessengerExists();
@@ -28,7 +30,7 @@ namespace CityBuilding.Test
             GivenTestEntityIsInList();
             var itemStorage = new ItemStorage
             {
-                Capacity = 10,
+                Capacity = capacity,
                 Items =
                 {
                     ["Test"] = new StoredItemData
@@ -76,6 +78,47 @@ namespace CityBuilding.Test
             TestEntity.Components.Add(itemStorage);
             Game.SceneSystem.Update(new GameTime());
             ExpectNoMsg(1000);
+        }
+
+        [Fact]
+        public void ProcessorCutsOffLowPriorityItemsIfCapacityTooLow()
+        {
+            GivenSceneExists();
+            GivenMessengerExists();
+            MessengerMock.Protected()
+                .Setup<IActorRef>("CreateEntityManager")
+                .Returns(() => TestActor);
+            var itemStorageProcessor = new ItemStorageProcessor(Messenger);
+            Game.SceneSystem.SceneInstance.Processors.Add(itemStorageProcessor);
+            GivenTestEntityExists();
+            GivenTestEntityIsInList();
+            var itemStorage = new ItemStorage
+            {
+                Capacity = 25,
+                Items =
+                {
+                    ["Test"] = new StoredItemData
+                    {
+                        CurrentCount = 5,
+                        MaxCount = 15,
+                        RequestUntil = 15
+                    },
+                    ["Test2"] = new StoredItemData
+                    {
+                        Priority = 1,
+                        CurrentCount = 5,
+                        MaxCount = 15,
+                        RequestUntil = 15
+                    }
+                }
+            };
+            TestEntity.Components.Add(itemStorage);
+            Game.SceneSystem.Update(new GameTime());
+            ExpectMsg<CreateWalkerWithMessage>(
+                message => WalkerTests.IsWalkerWithItemRequest(message, "Test2", 10));
+            ExpectMsg<CreateWalkerWithMessage>(
+                message => WalkerTests.IsWalkerWithItemRequest(message, "Test", 5));
+            ExpectNoMsg();
         }
 
         [Fact]

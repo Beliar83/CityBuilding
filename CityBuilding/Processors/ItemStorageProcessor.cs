@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CityBuilding.Components;
 using CityBuilding.Items;
 using CityBuilding.Messages;
@@ -22,20 +24,25 @@ namespace CityBuilding.Processors
         {
             foreach (ItemStorage itemStorage in ComponentDatas.Values)
             {
-                foreach (KeyValuePair<string, StoredItemData> items in itemStorage.Items)
+                int remainingCapacity = itemStorage.Items.Aggregate(itemStorage.Capacity,
+                    (remaining, item) => remaining - item.Value.CurrentCount);
+                foreach (KeyValuePair<string, StoredItemData> items in itemStorage.Items.OrderByDescending(item =>
+                    item.Value.Priority))
                 {
                     string item = items.Key;
                     StoredItemData itemData = items.Value;
                     if (itemData.RequestUntil.HasValue)
                     {
                         int missing = itemData.RequestUntil.Value - itemData.CurrentCount;
-                        if (missing > 0)
+                        if (remainingCapacity > 0 && missing > 0)
                         {
+                            int adjustedMissing = Math.Min(missing, remainingCapacity);
                             messenger.SendMessageToEntityManager(new CreateWalkerWithMessage(new ItemRequest
                             {
                                 Item = item,
-                                Amount = missing
+                                Amount = adjustedMissing
                             }));
+                            remainingCapacity -= adjustedMissing;
                         }
                     }
 
