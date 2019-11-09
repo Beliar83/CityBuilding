@@ -12,11 +12,14 @@ namespace CityBuilding.Test
     public class ItemStorageProcessorTests : TestWithMessenger
     {
         [Theory]
-        [InlineData(5, 0, 5, 5)]
-        [InlineData(5, 3, 5, 2)]
-        [InlineData(15, 5, 15, 10)]
-        [InlineData(10, 5, 15, 5)]
+        [InlineData(5, 0, 5, 5, 5)]
+        [InlineData(5, 3, 5, 5, 2)]
+        [InlineData(15, 5, 15, 15, 10)]
+        [InlineData(10, 5, 15, 15, 5)]
+        [InlineData(15, 5, 15, 10, 5)]
+        [InlineData(10, 0, 15, 15, 10)]
         public void ProcessorRequestsItemsIfRequestThresholdNotMet(int capacity, int current, int requestUntil,
+            int maxCount,
             int expected)
         {
             GivenSceneExists();
@@ -36,7 +39,7 @@ namespace CityBuilding.Test
                     ["Test"] = new StoredItemData
                     {
                         CurrentCount = current,
-                        MaxCount = requestUntil,
+                        MaxCount = maxCount,
                         RequestUntil = requestUntil
                     }
                 }

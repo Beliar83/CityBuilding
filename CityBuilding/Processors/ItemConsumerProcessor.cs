@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using CityBuilding.Components;
 using CityBuilding.Items;
 using CityBuilding.Messages;
@@ -9,7 +9,7 @@ using Xenko.Games;
 
 namespace CityBuilding.Processors
 {
-    public class ItemConsumerProcessor : EntityProcessor<ItemConsumer>
+    public class ItemConsumerProcessor : EntityProcessor<ItemConsumer, ItemConsumerAssociatedData>
     {
         [NotNull] private readonly Messenger messenger;
 
@@ -26,29 +26,60 @@ namespace CityBuilding.Processors
             totalElapsed += time.Elapsed;
             while (totalElapsed.TotalSeconds >= 1)
             {
-                foreach (NeededItemData neededItemsValue in ComponentDatas.Values.Where(itemConsumer =>
-                        !itemConsumer.NeededItems.Values.Any(i => i.CurrentCount < i.ConsumptionPerSecond))
-                    .SelectMany(itemConsumer => itemConsumer.NeededItems.Values))
+                foreach (KeyValuePair<ItemConsumer, ItemConsumerAssociatedData> keyValuePair in ComponentDatas)
                 {
-                    neededItemsValue.CurrentCount -= neededItemsValue.ConsumptionPerSecond;
+                    ItemConsumer itemConsumer = keyValuePair.Key;
+                    ItemStorage itemStorage = keyValuePair.Value.ItemStorage;
+                    foreach (KeyValuePair<string, NeededItemData> itemConsumerNeededItem in itemConsumer.NeededItems)
+                    {
+                        string key = itemConsumerNeededItem.Key;
+                        NeededItemData neededItemData = itemConsumerNeededItem.Value;
+                        if (itemStorage.Items.ContainsKey(key) &&
+                            itemStorage.Items[key].CurrentCount >= neededItemData.OrderThreshold)
+                        {
+                            itemStorage.Items[key].CurrentCount -= neededItemData.ConsumptionPerSecond;
+                        }
+                    }
                 }
 
                 totalElapsed = totalElapsed.Subtract(new TimeSpan(0, 0, 1));
             }
 
-            foreach (CreateWalkerWithMessage message in ComponentDatas.Values.SelectMany(itemConsumer =>
-                from item in itemConsumer.NeededItems.Keys
-                let neededItemData = itemConsumer.NeededItems[item]
-                let thresholdDifference = neededItemData.CurrentCount - neededItemData.OrderThreshold
-                where thresholdDifference < 0
-                select new CreateWalkerWithMessage(new ItemRequest
-                {
-                    Item = item,
-                    Amount = neededItemData.MaxCount - neededItemData.CurrentCount
-                })))
+            foreach (KeyValuePair<ItemConsumer, ItemConsumerAssociatedData> keyValuePair in ComponentDatas)
+            foreach (string item in keyValuePair.Key.NeededItems.Keys)
             {
+                ItemConsumer itemConsumer = keyValuePair.Key;
+                ItemStorage itemStorage = keyValuePair.Value.ItemStorage;
+                if (!itemStorage.Items.ContainsKey(item))
+                {
+                    itemStorage.Items[item] = new StoredItemData();
+                }
+
+                StoredItemData storedItem = itemStorage.Items[item];
+                NeededItemData neededItemData = itemConsumer.NeededItems[item];
+
+                int thresholdDifference = storedItem.CurrentCount - neededItemData.OrderThreshold;
+                if (thresholdDifference >= 0)
+                {
+                    continue;
+                }
+
+                int capacity = storedItem.MaxCount.HasValue
+                    ? Math.Min(itemStorage.Capacity, storedItem.MaxCount.Value)
+                    : itemStorage.Capacity;
+                var message = new CreateWalkerWithMessage(new ItemRequest
+                    {Item = item, Amount = capacity - storedItem.CurrentCount});
                 messenger.SendMessageToEntityManager(message);
             }
+        }
+
+        /// <inheritdoc />
+        protected override ItemConsumerAssociatedData GenerateComponentData(Entity entity, ItemConsumer component)
+        {
+            return new ItemConsumerAssociatedData
+            {
+                ItemStorage = entity.Components.Get<ItemStorage>()
+            };
         }
     }
 }

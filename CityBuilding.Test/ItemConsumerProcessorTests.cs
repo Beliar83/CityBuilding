@@ -39,9 +39,23 @@ namespace CityBuilding.Test
                 NeededItems =
                 {
                     [item] = new NeededItemData
-                        {CurrentCount = currentCount, MaxCount = maxCount, OrderThreshold = orderThreshold}
+                        {OrderThreshold = orderThreshold}
                 }
             };
+
+            var itemStorage = new ItemStorage
+            {
+                Capacity = maxCount,
+                Items =
+                {
+                    [item] = new StoredItemData
+                    {
+                        CurrentCount = currentCount,
+                        MaxCount = maxCount
+                    }
+                }
+            };
+            TestEntity.Components.Add(itemStorage);
             TestEntity.Components.Add(itemConsumer);
             Game.SceneSystem.Update(new GameTime());
             ExpectMsg<CreateWalkerWithMessage>(message =>
@@ -53,6 +67,7 @@ namespace CityBuilding.Test
         public void ItemConsumerSubtractsItems(
             int seconds,
             Dictionary<string, NeededItemData> neededItems,
+            Dictionary<string, StoredItemData> storedItems,
             Dictionary<string, int> expectedCounts)
         {
             GivenSceneExists();
@@ -65,12 +80,14 @@ namespace CityBuilding.Test
             GivenTestEntityExists();
             GivenTestEntityIsInList();
             var itemConsumer = new ItemConsumer(neededItems);
+            var itemStorage = new ItemStorage(storedItems);
+            TestEntity.Components.Add(itemStorage);
             TestEntity.Components.Add(itemConsumer);
             var elapsedTime = new TimeSpan(0, 0, 0, seconds);
             Game.SceneSystem.Update(new GameTime(elapsedTime, elapsedTime));
             foreach ((string key, int expectedCount) in expectedCounts)
             {
-                itemConsumer.NeededItems[key].CurrentCount.ShouldBe(expectedCount);
+                itemStorage.Items[key].CurrentCount.ShouldBe(expectedCount);
             }
         }
 
@@ -82,7 +99,7 @@ namespace CityBuilding.Test
                 .WithNamingConvention(new CamelCaseNamingConvention())
                 .Build();
             var testData = deserializer.Deserialize<List<ItemConsumerSubtractsItemsData>>(yamlData);
-            return testData.Select(d => new object[] {d.Seconds, d.NeededItems, d.ExpectedCounts});
+            return testData.Select(d => new object[] {d.Seconds, d.NeededItems, d.StoredItems, d.ExpectedCounts});
         }
 
         private struct ItemConsumerSubtractsItemsData
@@ -90,6 +107,7 @@ namespace CityBuilding.Test
 #pragma warning disable 649 // It is set from the deserializer
             public int Seconds;
             public Dictionary<string, NeededItemData> NeededItems;
+            public Dictionary<string, StoredItemData> StoredItems;
             public Dictionary<string, int> ExpectedCounts;
 #pragma warning restore 649
         }

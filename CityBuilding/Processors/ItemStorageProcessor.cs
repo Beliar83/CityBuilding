@@ -33,10 +33,14 @@ namespace CityBuilding.Processors
                     StoredItemData itemData = items.Value;
                     if (itemData.RequestUntil.HasValue)
                     {
+                        int capacityForItem = itemData.MaxCount.HasValue
+                            ? Math.Min(remainingCapacity, itemData.MaxCount.Value - itemData.CurrentCount)
+                            : remainingCapacity;
+
                         int missing = itemData.RequestUntil.Value - itemData.CurrentCount;
-                        if (remainingCapacity > 0 && missing > 0)
+                        if (capacityForItem > 0 && missing > 0)
                         {
-                            int adjustedMissing = Math.Min(missing, remainingCapacity);
+                            int adjustedMissing = Math.Min(missing, capacityForItem);
                             messenger.SendMessageToEntityManager(new CreateWalkerWithMessage(new ItemRequest
                             {
                                 Item = item,

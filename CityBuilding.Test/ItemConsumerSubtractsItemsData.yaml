@@ -2,35 +2,42 @@
   seconds: 1
   neededItems:
     Item1:
-      currentCount: 8
-      maxCount: 10
       orderThreshold: 0
       consumptionPerSecond: 2
+  storedItems:
+    Item1:
+      currentCount: 8
+      maxCount: 10      
   expectedCounts:
     Item1: 6
 -
   seconds: 4
   neededItems:
     Item1:
-      currentCount: 8
-      maxCount: 10
       orderThreshold: 0
       consumptionPerSecond: 2
+  storedItems:
+    Item1:
+      currentCount: 8
+      maxCount: 10
   expectedCounts:
     Item1: 0
 -
   seconds: 2
   neededItems:
     Item1:
-      currentCount: 8
-      maxCount: 10
       orderThreshold: 0
       consumptionPerSecond: 3
     Item2:
-      currentCount: 15
-      maxCount: 10
       orderThreshold: 0
       consumptionPerSecond: 4
+  storedItems:
+    Item1:
+      currentCount: 8
+      maxCount: 10
+    Item2:
+      currentCount: 15
+      maxCount: 10
   expectedCounts:
     Item1: 2
     Item2: 7

@@ -3,6 +3,6 @@
     public class ItemData
     {
         public int CurrentCount;
-        public int MaxCount;
+        public int? MaxCount;
     }
 }
