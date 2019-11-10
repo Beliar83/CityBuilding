@@ -18,8 +18,11 @@ namespace CityBuilding.Test
         [InlineData(10, 5, 15, 15, 5)]
         [InlineData(15, 5, 15, 10, 5)]
         [InlineData(10, 0, 15, 15, 10)]
-        public void ProcessorRequestsItemsIfRequestThresholdNotMet(int capacity, int current, int requestUntil,
-            int maxCount,
+        [InlineData(null, 5, 10, null, 5)]
+        [InlineData(null, 10, 20, 11, 1)]
+        [InlineData(20, 15, 30, null, 5)]
+        public void ProcessorRequestsItemsIfRequestThresholdNotMet(int? capacity, int current, int requestUntil,
+            int? maxCount,
             int expected)
         {
             GivenSceneExists();
@@ -229,6 +232,64 @@ namespace CityBuilding.Test
             {
                 Capacity = 10,
                 Items = {["Test"] = new StoredItemData()}
+            };
+            TestEntity.Components.Add(itemStorage);
+            Game.SceneSystem.Update(new GameTime());
+            ExpectNoMsg(1000);
+        }
+
+        [Fact]
+        public void ProcessorRequestsNoItemsIfCapacityReached()
+        {
+            GivenSceneExists();
+            GivenMessengerExists();
+            MessengerMock.Protected()
+                .Setup<IActorRef>("CreateEntityManager")
+                .Returns(() => TestActor);
+            var itemStorageProcessor = new ItemStorageProcessor(Messenger);
+            Game.SceneSystem.SceneInstance.Processors.Add(itemStorageProcessor);
+            GivenTestEntityExists();
+            GivenTestEntityIsInList();
+            var itemStorage = new ItemStorage
+            {
+                Capacity = 10,
+                Items =
+                {
+                    ["Test"] = new StoredItemData
+                    {
+                        RequestUntil = 15,
+                        CurrentCount = 10
+                    }
+                }
+            };
+            TestEntity.Components.Add(itemStorage);
+            Game.SceneSystem.Update(new GameTime());
+            ExpectNoMsg(1000);
+        }
+
+        [Fact]
+        public void ProcessorRequestsNoItemsIfMaxCountReached()
+        {
+            GivenSceneExists();
+            GivenMessengerExists();
+            MessengerMock.Protected()
+                .Setup<IActorRef>("CreateEntityManager")
+                .Returns(() => TestActor);
+            var itemStorageProcessor = new ItemStorageProcessor(Messenger);
+            Game.SceneSystem.SceneInstance.Processors.Add(itemStorageProcessor);
+            GivenTestEntityExists();
+            GivenTestEntityIsInList();
+            var itemStorage = new ItemStorage
+            {
+                Items =
+                {
+                    ["Test"] = new StoredItemData
+                    {
+                        RequestUntil = 15,
+                        CurrentCount = 10,
+                        MaxCount = 10
+                    }
+                }
             };
             TestEntity.Components.Add(itemStorage);
             Game.SceneSystem.Update(new GameTime());

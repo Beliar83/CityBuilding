@@ -11,7 +11,7 @@ namespace CityBuilding.Components
             Items = storedItems ?? new Dictionary<string, StoredItemData>();
         }
 
-        public int Capacity { get; set; }
+        public int? Capacity { get; set; }
         public bool AutomaticallyControlled { get; set; }
         public Dictionary<string, StoredItemData> Items { get; }
     }

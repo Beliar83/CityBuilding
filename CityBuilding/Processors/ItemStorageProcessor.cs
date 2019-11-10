@@ -24,7 +24,7 @@ namespace CityBuilding.Processors
         {
             foreach (ItemStorage itemStorage in ComponentDatas.Values)
             {
-                int remainingCapacity = itemStorage.Items.Aggregate(itemStorage.Capacity,
+                int remainingCapacity = itemStorage.Items.Aggregate(itemStorage.Capacity ?? int.MaxValue,
                     (remaining, item) => remaining - item.Value.CurrentCount);
                 foreach (KeyValuePair<string, StoredItemData> items in itemStorage.Items.OrderByDescending(item =>
                     item.Value.Priority))
@@ -33,9 +33,8 @@ namespace CityBuilding.Processors
                     StoredItemData itemData = items.Value;
                     if (itemData.RequestUntil.HasValue)
                     {
-                        int capacityForItem = itemData.MaxCount.HasValue
-                            ? Math.Min(remainingCapacity, itemData.MaxCount.Value - itemData.CurrentCount)
-                            : remainingCapacity;
+                        int capacityForItem = Math.Min(remainingCapacity,
+                            (itemData.MaxCount ?? int.MaxValue) - itemData.CurrentCount);
 
                         int missing = itemData.RequestUntil.Value - itemData.CurrentCount;
                         if (capacityForItem > 0 && missing > 0)

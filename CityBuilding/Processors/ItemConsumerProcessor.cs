@@ -64,9 +64,7 @@ namespace CityBuilding.Processors
                     continue;
                 }
 
-                int capacity = storedItem.MaxCount.HasValue
-                    ? Math.Min(itemStorage.Capacity, storedItem.MaxCount.Value)
-                    : itemStorage.Capacity;
+                int capacity = Math.Min(itemStorage.Capacity ?? int.MaxValue, storedItem.MaxCount ?? int.MaxValue);
                 var message = new CreateWalkerWithMessage(new ItemRequest
                     {Item = item, Amount = capacity - storedItem.CurrentCount});
                 messenger.SendMessageToEntityManager(message);
