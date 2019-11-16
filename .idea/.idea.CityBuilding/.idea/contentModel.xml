@@ -86,6 +86,7 @@
         <e p="CityBuilding.csproj" t="IncludeRecursive" />
         <e p="CityBuilding.xkpkg" t="Include" />
         <e p="Components" t="Include">
+          <e p="Activateable.cs" t="Include" />
           <e p="ItemConsumer.cs" t="Include" />
           <e p="ItemConsumerAssociatedData.cs" t="Include" />
           <e p="ItemStorage.cs" t="Include" />
